@@ -1,6 +1,6 @@
 organization := "io.sqooba"
 scalaVersion := "2.12.3"
-version      := "0.1.0-SNAPSHOT"
+version      := "0.1.0"
 name := "atlas-client"
 
 val dispatchVersion = "0.13.2"
