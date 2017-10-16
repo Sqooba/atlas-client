@@ -1,6 +1,6 @@
-# README #
+# Atlas-Client
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Simple dispatch based client for accessing Apache Atlas
 
 ### What is this repository for? ###
 
