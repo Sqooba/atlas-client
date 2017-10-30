@@ -8,7 +8,7 @@ pipeline {
             steps {
                 script {
                     def sbtHome = tool 'sbt 1.0'
-                    sh "${sbtHome}/bin/sbt clean compile"
+                    sh "${sbtHome}/bin/sbt +clean +compile"
                 }
             }
         }
@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     def sbtHome = tool 'sbt 1.0'
-                    sh "${sbtHome}/bin/sbt publish"
+                    sh "${sbtHome}/bin/sbt +publish"
                 }
             }
         }
