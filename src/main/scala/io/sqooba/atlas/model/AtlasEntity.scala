@@ -5,3 +5,5 @@ case class AtlasEntity(typeName: String,
                        status: Option[AtlasStatus.AtlasStatus] = None,
                        classificationNames: List[Any] = List(),
                        attributes: Map[String, Any])
+
+case class AtlasReferenceId(typeName: String, guid: String)

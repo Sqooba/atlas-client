@@ -65,6 +65,7 @@ class AtlasClient(client: AtlasClientWrapper) {
     }
   }
 
+  // todo: handle errors!!!! -
   def searchEntities(typeName: String, dslQuery: String): Future[SearchResult] = {
     val req = url(dslSearchUrl).GET <<? Map("typeName" -> typeName, "query" -> dslQuery)
     client.queryAtlas(req).map(jsonRes => {
@@ -72,14 +73,18 @@ class AtlasClient(client: AtlasClientWrapper) {
     })
   }
 
-  def findByUuid(guid: UUID): Future[Option[AtlasEntity]] = {
-    val uuidUrl: String = s"$entityUrl/guid/${guid.toString}"
+  def findByUuid(guid: String): Future[Option[AtlasEntity]] = {
+    val uuidUrl: String = s"$entityUrl/guid/${guid}"
     val req = url(uuidUrl).GET
     client.queryAtlas(req).map {
       case Some(res) => Some((res \ "entity").extract[AtlasEntity])
       case _ => None
     }
   }
+
+  def findByUuid(guid: UUID): Future[Option[AtlasEntity]] = findByUuid(guid.toString)
+
+  def doRequest(req: Req): Future[Option[JValue]] = client.queryAtlas(req)
 }
 
 class AtlasClientWrapper(client: Http) {
