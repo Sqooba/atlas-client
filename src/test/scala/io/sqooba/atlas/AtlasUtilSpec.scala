@@ -2,10 +2,11 @@ package io.sqooba.atlas
 
 import io.sqooba.atlas.model.AtlasStatus
 import io.sqooba.atlas.model.AtlasStatus.AtlasStatus
+import io.sqooba.conf.EnvUtil
 import org.json4s.{DefaultFormats, Formats}
 import org.json4s.ext.EnumNameSerializer
-import org.json4s.native.JsonMethods._
-import org.json4s.native.Serialization.write
+import org.json4s.jackson.JsonMethods._
+import org.json4s.jackson.Serialization.write
 import org.scalatest.{FlatSpec, Matchers}
 
 class AtlasUtilSpec extends FlatSpec with Matchers {
@@ -21,8 +22,18 @@ class AtlasUtilSpec extends FlatSpec with Matchers {
 
   "json" should "work" in {
     val jsonString = """ {"id":1,"atlasStatus":"ACTIVE"} """
-    val json = parse(jsonString)
+    val json = parse(jsonString, true)
     val cc = json.extract[TestCC]
     cc.atlasStatus shouldBe AtlasStatus.Active
+  }
+
+  "test reading env" should "give value from env" in {
+    val testUrl = "http://somenonsense.url"
+    EnvUtil.setEnv("ATLAS_BASEURL", testUrl)
+
+    val client = new AtlasClient()
+    client.atlasBaseUrl shouldBe testUrl
+
+    EnvUtil.removeEnv("ATLAS_BASEURL")
   }
 }

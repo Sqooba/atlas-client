@@ -8,23 +8,26 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import dispatch._
 import io.sqooba.atlas.model.{AtlasEntity, AtlasStatus, SearchResult}
+import io.sqooba.conf.SqConf
 import org.json4s.{DefaultFormats, Formats, JValue}
 import org.json4s.JsonAST.JNothing
 import org.json4s.ext.EnumNameSerializer
-import org.json4s.native.JsonMethods._
-import org.json4s.native.Serialization.write
+import org.json4s.jackson.JsonMethods._
+import org.json4s.jackson.Serialization.write
 
 class AtlasClient(client: AtlasClientWrapper) {
 
   def this() = this(new AtlasClientWrapper())
 
+  val config = new SqConf()
+
   implicit val jsonFormats: Formats = DefaultFormats + new EnumNameSerializer(AtlasStatus)
 
-  val username: String = ConfigFactory.load("atlas-credentials.conf").getString("atlas.username")
-  val password: String = ConfigFactory.load("atlas-credentials.conf").getString("atlas.password")
+// val username: String = ConfigFactory.load("atlas-credentials.conf").getString("atlas.username")
+// val password: String = ConfigFactory.load("atlas-credentials.conf").getString("atlas.password")
 
   val logger = Logger(this.getClass)
-  val atlasBaseUrl = ConfigFactory.load().getString("atlas.baseUrl")
+  val atlasBaseUrl = config.getString("atlas.baseUrl")
   val dslSearchUrl = s"$atlasBaseUrl/api/atlas/v2/search/dsl"
   val entityUrl = s"$atlasBaseUrl/api/atlas/v2/entity"
 
@@ -89,8 +92,9 @@ class AtlasClient(client: AtlasClientWrapper) {
 
 class AtlasClientWrapper(client: Http) {
 
-  val username: String = ConfigFactory.load("atlas-credentials.conf").getString("atlas.username")
-  val password: String = ConfigFactory.load("atlas-credentials.conf").getString("atlas.password")
+  val config = new SqConf("atlas-credentials.conf")
+  val username: String = config.getString("atlas.username")
+  val password: String = config.getString("atlas.password")
 
   val logger = Logger(this.getClass)
   def this() = this(Http.withConfiguration(_.setConnectTimeout(7500).setRequestTimeout(7500)))
@@ -101,7 +105,7 @@ class AtlasClientWrapper(client: Http) {
       res.getStatusCode match {
         case 200 => {
           logger.debug(s"Ok response for: ${req.url}")
-          Some(parse(res.getResponseBody))
+          Some(parse(res.getResponseBody, true))
         }
         case _ => {
           logger.error(s"Failed: ${res.getStatusCode} - ${res.getStatusText}: ${res.getResponseBody}")

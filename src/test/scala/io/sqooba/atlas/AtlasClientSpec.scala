@@ -6,7 +6,7 @@ import scala.concurrent.Future
 
 import dispatch.Req
 import io.sqooba.atlas.model.{AtlasEntity, AtlasStatus}
-import org.json4s.native.JsonMethods._
+import org.json4s.jackson.JsonMethods._
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest._
@@ -77,9 +77,9 @@ class AtlasClientSpec extends AsyncFlatSpec with Matchers with MockitoSugar with
   } """.stripMargin
 
   // {"queryType":"DSL","queryText":"`kafka_topic` topic=\"this does not exist\" "}
-  val createResponseJson = parse(createResponseJsonAsString)
-  val findByUuidJson = parse(findByUuidAsString)
-  val searchResultJson = parse(searchResultJsonString)
+  val createResponseJson = parse(createResponseJsonAsString, true)
+  val findByUuidJson = parse(findByUuidAsString, true)
+  val searchResultJson = parse(searchResultJsonString, true)
 
   "creating a new topic" should "update topic fields with fields from response" in {
     val ts = new Date().getTime
