@@ -1,6 +1,6 @@
 organization := "io.sqooba"
 scalaVersion := "2.11.11"
-version      := "0.1.3"
+version      := "0.1.4"
 name         := "atlas-client"
 
 val dispatchVersion = "0.13.2"
@@ -23,7 +23,7 @@ libraryDependencies ++= Seq(
   "org.json4s"                  %%  "json4s-core"             % json4sVersion, // included in spark
   "org.json4s"                  %%  "json4s-jackson"          % json4sVersion, // included in spark,
   "ch.qos.logback"              %   "logback-classic"         % "1.2.3",
-  "io.sqooba"                   %%  "sq-conf"                 % "0.1.2",
+  "io.sqooba"                   %%  "sq-conf"                 % "0.1.3",
   "com.typesafe.scala-logging"  %%  "scala-logging"           % "3.7.2",
   "org.scalatest"               %%  "scalatest"               % "3.0.3"           % Test,
   "org.mockito"                 %   "mockito-all"             % "1.10.19"         % Test
