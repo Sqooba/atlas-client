@@ -15,7 +15,7 @@ import org.scalatest.mockito.MockitoSugar
 class AtlasClientSpec extends AsyncFlatSpec with Matchers with MockitoSugar with BeforeAndAfter {
 
   val clientWrapper: AtlasClientWrapper = mock[AtlasClientWrapper]
-  val atlasClient: AtlasClient = new AtlasClient(clientWrapper)
+  val atlasClient: AtlasClient = new AtlasClient(clientWrapper, "someurl")
 
   val createResponseJsonAsString: String = """ {
     "mutatedEntities":{

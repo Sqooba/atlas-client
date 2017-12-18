@@ -4,7 +4,6 @@ import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.Logger
 import dispatch._
 import io.sqooba.atlas.model.{AtlasEntity, AtlasStatus, SearchResult}
@@ -15,19 +14,14 @@ import org.json4s.ext.EnumNameSerializer
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization.write
 
-class AtlasClient(client: AtlasClientWrapper) {
+class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
 
-  def this() = this(new AtlasClientWrapper())
-
-  val config = new SqConf()
-
+  // val config = new SqConf()
+  def this() = this(new AtlasClientWrapper(), new SqConf().getString("atlas.baseUrl"))
   implicit val jsonFormats: Formats = DefaultFormats + new EnumNameSerializer(AtlasStatus)
 
-// val username: String = ConfigFactory.load("atlas-credentials.conf").getString("atlas.username")
-// val password: String = ConfigFactory.load("atlas-credentials.conf").getString("atlas.password")
-
   val logger = Logger(this.getClass)
-  val atlasBaseUrl = config.getString("atlas.baseUrl")
+  // val atlasBaseUrl = config.getString("atlas.baseUrl")
   val dslSearchUrl = s"$atlasBaseUrl/api/atlas/v2/search/dsl"
   val entityUrl = s"$atlasBaseUrl/api/atlas/v2/entity"
 
@@ -71,9 +65,13 @@ class AtlasClient(client: AtlasClientWrapper) {
   // todo: handle errors!!!! -
   def searchEntities(typeName: String, dslQuery: String): Future[SearchResult] = {
     val req = url(dslSearchUrl).GET <<? Map("typeName" -> typeName, "query" -> dslQuery)
-    client.queryAtlas(req).map(jsonRes => {
-      jsonRes.get.extract[SearchResult]
-    })
+    client.queryAtlas(req).map {
+      case Some(jsonRes) => jsonRes.extract[SearchResult]
+      case None => {
+        logger.error("Invalid response from Atlas, returning empty SearchResult")
+        SearchResult(typeName, dslQuery, List())
+      }
+    }
   }
 
   def findByUuid(guid: String): Future[Option[AtlasEntity]] = {
