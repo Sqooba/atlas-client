@@ -95,7 +95,7 @@ class AtlasClientWrapper(client: Http) {
   val password: String = config.getString("atlas.password")
 
   val logger = Logger(this.getClass)
-  def this() = this(Http.withConfiguration(_.setConnectTimeout(7500).setRequestTimeout(7500)))
+  def this() = this(Http.withConfiguration(_.setConnectTimeout(15000).setRequestTimeout(15000)))
 
   def queryAtlas(req: Req): Future[Option[JValue]] = {
     val queryWithHeaders = req.setHeader("Content-Type", "application/json").as_!(username, password)
