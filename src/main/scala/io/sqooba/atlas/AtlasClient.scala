@@ -49,8 +49,21 @@ class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
     }
   }
 
+  def dslSearchEntity(dslQuery: String): Future[Option[AtlasEntity]] = {
+    val req = url(dslSearchUrl).GET <<? Map("query" -> dslQuery)
+
+    client.queryAtlas(req).map {
+      case Some(jsonRes) => {
+        val entitiesJson = (jsonRes \ "entities")
+        val entities: List[AtlasEntity] = entitiesJson.extract[List[AtlasEntity]]
+        if (entities.length >= 1) Some(entities.head) else None
+      }
+      case _ => None
+    }
+  }
+
   def dslSearchEntity(typeName: String, dslQuery: String): Future[Option[AtlasEntity]] = {
-    val req = url(dslSearchUrl).GET <<? Map("typeName" -> typeName, "query" -> dslQuery)
+    val req = url(dslSearchUrl).GET <<? Map("query" -> s"$typeName where $dslQuery")
 
     client.queryAtlas(req).map {
       case Some(jsonRes) => {
@@ -77,9 +90,8 @@ class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
     }
   }
 
-  // todo: handle errors!!!! -
   def dslSearchEntities(typeName: String, dslQuery: String): Future[SearchResult] = {
-    val req = url(dslSearchUrl).GET <<? Map("typeName" -> typeName, "query" -> dslQuery)
+    val req = url(dslSearchUrl).GET <<? Map("query" -> s"$typeName where $dslQuery")
     client.queryAtlas(req).map {
       case Some(jsonRes) => jsonRes.extract[SearchResult]
       case None => {

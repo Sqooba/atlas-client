@@ -15,6 +15,7 @@ class AtlasClientE2eSpec extends AsyncFlatSpec with Matchers {
 
   "dsl search entities" should "return SearchResult when 1 is found" taggedAs (ExternalSpec) in {
     aClient.dslSearchEntities("kafka_topic", "name=\"kafka_metadata_example\"").map(res => {
+      println(s"res: $res")
       res.entities.length shouldBe 1
     })
   }
