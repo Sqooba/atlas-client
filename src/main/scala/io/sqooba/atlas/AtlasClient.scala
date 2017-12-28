@@ -23,6 +23,7 @@ class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
   val logger = Logger(this.getClass)
   // val atlasBaseUrl = config.getString("atlas.baseUrl")
   val dslSearchUrl = s"$atlasBaseUrl/api/atlas/v2/search/dsl"
+  val basicSearchUrl = s"$atlasBaseUrl/api/atlas/v2/search/basic"
   val entityUrl = s"$atlasBaseUrl/api/atlas/v2/entity"
 
   def ccToMap(cc: AnyRef): Map[String, Any] = (Map[String, Any]() /: cc.getClass.getDeclaredFields) {
@@ -48,7 +49,7 @@ class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
     }
   }
 
-  def searchEntity(typeName: String, dslQuery: String): Future[Option[AtlasEntity]] = {
+  def dslSearchEntity(typeName: String, dslQuery: String): Future[Option[AtlasEntity]] = {
     val req = url(dslSearchUrl).GET <<? Map("typeName" -> typeName, "query" -> dslQuery)
 
     client.queryAtlas(req).map {
@@ -62,9 +63,34 @@ class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
     }
   }
 
+  def basicSearchEntity(typeName: String, dslQuery: String): Future[Option[AtlasEntity]] = {
+    val req = url(basicSearchUrl).GET <<? Map("typeName" -> typeName, "query" -> dslQuery)
+
+    client.queryAtlas(req).map {
+      case Some(jsonRes) => {
+        // jsonRes.extract[SearchResult]
+        val entitiesJson = (jsonRes \ "entities")
+        val entities: List[AtlasEntity] = entitiesJson.extract[List[AtlasEntity]]
+        if (entities.length >= 1) Some(entities.head) else None
+      }
+      case _ => None
+    }
+  }
+
   // todo: handle errors!!!! -
-  def searchEntities(typeName: String, dslQuery: String): Future[SearchResult] = {
+  def dslSearchEntities(typeName: String, dslQuery: String): Future[SearchResult] = {
     val req = url(dslSearchUrl).GET <<? Map("typeName" -> typeName, "query" -> dslQuery)
+    client.queryAtlas(req).map {
+      case Some(jsonRes) => jsonRes.extract[SearchResult]
+      case None => {
+        logger.error("Invalid response from Atlas, returning empty SearchResult")
+        SearchResult(typeName, dslQuery, List())
+      }
+    }
+  }
+
+  def basicSearchEntities(typeName: String, dslQuery: String): Future[SearchResult] = {
+    val req = url(basicSearchUrl).GET <<? Map("typeName" -> typeName, "query" -> dslQuery)
     client.queryAtlas(req).map {
       case Some(jsonRes) => jsonRes.extract[SearchResult]
       case None => {

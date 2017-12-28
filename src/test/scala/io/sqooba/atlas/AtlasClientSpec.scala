@@ -132,7 +132,7 @@ class AtlasClientSpec extends AsyncFlatSpec with Matchers with MockitoSugar with
 
   "find kafka_topic with dsl query" should "return valid item" in {
     when(clientWrapper.queryAtlas(any[Req])).thenReturn(Future.successful(Some(searchResultJson)))
-    atlasClient.searchEntity("kafka_topic", "topic=topic").map(res => {
+    atlasClient.dslSearchEntity("kafka_topic", "topic=topic").map(res => {
       res shouldBe defined
       res.get shouldBe a [AtlasEntity]
       res.get.status shouldBe defined
