@@ -128,15 +128,13 @@ class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
 
 class AtlasClientWrapper(client: Http) {
 
-  val config = new SqConf("atlas-credentials.conf")
-  val username: String = config.getString("atlas.username")
-  val password: String = config.getString("atlas.password")
-
   val logger = Logger(this.getClass)
-  def this() = this(Http.withConfiguration(_.setConnectTimeout(15000).setRequestTimeout(15000)))
+  def this() = this(Http.withConfiguration(_.setConnectTimeout(AtlasClientWrapper.timeoutInMs)
+    .setRequestTimeout(AtlasClientWrapper.timeoutInMs)))
 
   def queryAtlas(req: Req): Future[Option[JValue]] = {
-    val queryWithHeaders = req.setHeader("Content-Type", "application/json").as_!(username, password)
+    val queryWithHeaders = req.setHeader("Content-Type", "application/json").as_!(AtlasClientWrapper.username,
+      AtlasClientWrapper.password)
     client(queryWithHeaders).map(res => {
       res.getStatusCode match {
         case 200 => {
@@ -150,4 +148,11 @@ class AtlasClientWrapper(client: Http) {
       }
     })
   }
+}
+
+object AtlasClientWrapper {
+  val config = new SqConf("atlas-credentials.conf")
+  val username: String = config.getString("atlas.username")
+  val password: String = config.getString("atlas.password")
+  val timeoutInMs: Int = new SqConf().getInt("atlasClient.timeoutInMs")
 }
