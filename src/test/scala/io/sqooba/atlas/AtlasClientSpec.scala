@@ -76,7 +76,6 @@ class AtlasClientSpec extends AsyncFlatSpec with Matchers with MockitoSugar with
     }]
   } """.stripMargin
 
-  // {"queryType":"DSL","queryText":"`kafka_topic` topic=\"this does not exist\" "}
   val createResponseJson = parse(createResponseJsonAsString, true)
   val findByUuidJson = parse(findByUuidAsString, true)
   val searchResultJson = parse(searchResultJsonString, true)
@@ -133,6 +132,15 @@ class AtlasClientSpec extends AsyncFlatSpec with Matchers with MockitoSugar with
   "find kafka_topic with dsl query" should "return valid item" in {
     when(clientWrapper.queryAtlas(any[Req])).thenReturn(Future.successful(Some(searchResultJson)))
     atlasClient.dslSearchEntity("kafka_topic", "topic=topic").map(res => {
+      res shouldBe defined
+      res.get shouldBe a [AtlasEntity]
+      res.get.status shouldBe defined
+    })
+  }
+
+  "find using basic search" should "call basic endpoint" in {
+    when(clientWrapper.queryAtlas(any[Req])).thenReturn(Future.successful(Some(searchResultJson)))
+    atlasClient.basicSearchEntity("kafka_topic", "topic=topic").map(res => {
       res shouldBe defined
       res.get shouldBe a [AtlasEntity]
       res.get.status shouldBe defined
