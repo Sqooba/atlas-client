@@ -1,6 +1,6 @@
 organization := "io.sqooba"
 scalaVersion := "2.11.11"
-version      := "0.1.9"
+version      := "0.1.10-SNAPSHOT"
 name         := "atlas-client"
 
 val dispatchVersion = "0.13.2"
@@ -14,7 +14,6 @@ resolvers ++= Seq(
   "HDP Releases Public" at "http://repo.hortonworks.com/content/groups/public/",
   Resolver.mavenLocal
 )
-
 
 libraryDependencies ++= Seq(
   "net.databinder.dispatch"     %%  "dispatch-core"           % dispatchVersion,
