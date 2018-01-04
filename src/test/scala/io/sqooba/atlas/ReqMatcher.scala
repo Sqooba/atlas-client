@@ -1,7 +1,8 @@
-package io.sqooba
+package io.sqooba.atlas
 
 import dispatch.Req
 import org.mockito.ArgumentMatcher
+import org.mockito.Matchers.argThat
 import org.scalatest.matchers.{MatchResult, Matcher}
 
 trait CustomMatchers {
@@ -20,7 +21,7 @@ trait CustomMatchers {
 
   def matchUrl(expectedUrl: String): ReqUrlMatcher = new ReqUrlMatcher(expectedUrl)
 
-  class MockitoReqMatcher(reqLeft: Req) extends ArgumentMatcher[Req] {
+  class MockitoOnlyUrlReqMatcher(reqLeft: Req) extends ArgumentMatcher[Req] {
     override def matches(argument: scala.Any): Boolean = {
       if (argument.isInstanceOf[Req]) {
         val req = argument.asInstanceOf[Req]
@@ -30,6 +31,20 @@ trait CustomMatchers {
       }
     }
   }
+
+  class MockitoUrlAndMethodReqMatcher(reqLeft: Req) extends ArgumentMatcher[Req] {
+    override def matches(argument: scala.Any): Boolean = {
+      if (argument.isInstanceOf[Req]) {
+        val req = argument.asInstanceOf[Req]
+        req.url.equals(reqLeft.url) && req.toRequest.getMethod.equals(reqLeft.toRequest.getMethod)
+      } else {
+        false
+      }
+    }
+  }
 }
 
-object CustomMatchers extends CustomMatchers
+object CustomMatchers extends CustomMatchers {
+  def mockitoMatchUrlOnly(req: Req): Req = argThat(new MockitoOnlyUrlReqMatcher(req))
+  def mockitoMatchUrlAndMethod(req: Req): Req = argThat(new MockitoUrlAndMethodReqMatcher(req))
+}
