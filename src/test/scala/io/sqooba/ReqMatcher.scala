@@ -1,7 +1,8 @@
 package io.sqooba
 
 import dispatch.Req
-import org.scalatest.matchers.{Matcher, MatchResult}
+import org.mockito.ArgumentMatcher
+import org.scalatest.matchers.{MatchResult, Matcher}
 
 trait CustomMatchers {
 
@@ -18,6 +19,17 @@ trait CustomMatchers {
   }
 
   def matchUrl(expectedUrl: String): ReqUrlMatcher = new ReqUrlMatcher(expectedUrl)
+
+  class MockitoReqMatcher(reqLeft: Req) extends ArgumentMatcher[Req] {
+    override def matches(argument: scala.Any): Boolean = {
+      if (argument.isInstanceOf[Req]) {
+        val req = argument.asInstanceOf[Req]
+        req.url.equals(reqLeft.url)
+      } else {
+        false
+      }
+    }
+  }
 }
 
 object CustomMatchers extends CustomMatchers

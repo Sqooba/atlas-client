@@ -1,6 +1,8 @@
 package io.sqooba.atlas
 
-import dispatch.{url, Req}
+import scala.concurrent.Future
+
+import dispatch.{Req, url}
 import io.sqooba.atlas.model.AtlasStatus
 import io.sqooba.atlas.model.AtlasStatus.AtlasStatus
 import io.sqooba.CustomMatchers._
@@ -9,9 +11,12 @@ import org.json4s.{DefaultFormats, Formats}
 import org.json4s.ext.EnumNameSerializer
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization.write
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
 
-class AtlasUtilSpec extends FlatSpec with Matchers {
+class AtlasUtilSpec extends FlatSpec with Matchers with MockitoSugar {
 
   case class TestCC(id: Int, atlasStatus: AtlasStatus)
   implicit val jsonFormats: Formats = DefaultFormats + new EnumNameSerializer(AtlasStatus)
@@ -50,5 +55,44 @@ class AtlasUtilSpec extends FlatSpec with Matchers {
     val failedUrl: String = s"http://baseurl/guid/other"
     val req: Req = url(reqUrl).GET
     req should not (matchUrl (failedUrl))
+  }
+
+  val mock: AtlasClientWrapper = mock[AtlasClientWrapper]
+
+  "req matcher works with mockito" should "do match correct req" in {
+    reset(mock)
+    val reqUrl: String = s"http://baseurl/guid"
+    val req: Req = url(reqUrl).GET
+
+    when(mock.queryAtlas(argThat(new MockitoReqMatcher(req)))).thenReturn(Future.successful(None))
+    mock.queryAtlas(req)
+    verify(mock, times(1)).queryAtlas(argThat(new MockitoReqMatcher(req)))
+  }
+
+  "req matcher works with mockito" should "not match other req" in {
+    reset(mock)
+    val reqUrl: String = s"http://baseurl/guid"
+    val otherReqUrl: String = s"http://baseurl/otherurl"
+    val req: Req = url(reqUrl).GET
+    val otherReq: Req = url(otherReqUrl).GET
+
+    when(mock.queryAtlas(argThat(new MockitoReqMatcher(req)))).thenReturn(Future.successful(None))
+    mock.queryAtlas(otherReq)
+    verify(mock, times(0)).queryAtlas(argThat(new MockitoReqMatcher(req)))
+  }
+
+  "req matcher" should "count correct amount of calls" in {
+    reset(mock)
+    val reqUrl: String = s"http://baseurl/guid"
+    val otherReqUrl: String = s"http://baseurl/otherurl"
+    val req: Req = url(reqUrl).GET
+    val otherReq: Req = url(otherReqUrl).GET
+
+    when(mock.queryAtlas(argThat(new MockitoReqMatcher(req)))).thenReturn(Future.successful(None))
+    mock.queryAtlas(otherReq)
+    mock.queryAtlas(req)
+    mock.queryAtlas(otherReq)
+    mock.queryAtlas(req)
+    verify(mock, times(2)).queryAtlas(argThat(new MockitoReqMatcher(req)))
   }
 }
