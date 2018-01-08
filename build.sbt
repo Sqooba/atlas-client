@@ -3,6 +3,8 @@ scalaVersion := "2.11.11"
 version      := "0.1.10-SNAPSHOT"
 name         := "atlas-client"
 
+crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.4")
+
 val dispatchVersion = "0.13.2"
 val json4sVersion = "3.2.11" // match spark2
 
