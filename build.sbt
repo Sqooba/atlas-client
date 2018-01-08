@@ -1,7 +1,9 @@
 organization := "io.sqooba"
 scalaVersion := "2.11.11"
-version      := "0.1.9"
+version      := "0.1.11-SNAPSHOT"
 name         := "atlas-client"
+
+crossScalaVersions := Seq("2.11.12", "2.12.4")
 
 val dispatchVersion = "0.13.2"
 val json4sVersion = "3.2.11" // match spark2
@@ -15,7 +17,6 @@ resolvers ++= Seq(
   Resolver.mavenLocal
 )
 
-
 libraryDependencies ++= Seq(
   "net.databinder.dispatch"     %%  "dispatch-core"           % dispatchVersion,
   "org.json4s"                  %%  "json4s-ext"              % json4sVersion,
@@ -25,7 +26,7 @@ libraryDependencies ++= Seq(
   "ch.qos.logback"              %   "logback-classic"         % "1.2.3",
   "io.sqooba"                   %%  "sq-conf"                 % "0.1.3",
   "com.typesafe.scala-logging"  %%  "scala-logging"           % "3.7.2",
-  "org.scalatest"               %%  "scalatest"               % "3.0.3"           % Test,
+  "org.scalatest"               %%  "scalatest"               % "3.0.4"           % Test,
   "org.mockito"                 %   "mockito-all"             % "1.10.19"         % Test
 )
 
