@@ -25,7 +25,7 @@ case class AttributeDefinition(name: String,
                                defaultValue: Option[String] = None,
                                description: Option[String] = None)
 
-case class TypeDefinitionQuery(enumTypes: Seq[AtlasTypeDefinition] = Seq(),
+case class AtlasTypeDefinitions(enumTypes: Seq[AtlasTypeDefinition] = Seq(),
                                structTypes: Seq[AtlasTypeDefinition] = Seq(),
                                traitTypes: Seq[AtlasTypeDefinition] = Seq(),
                                classTypes: Seq[AtlasTypeDefinition] = Seq())

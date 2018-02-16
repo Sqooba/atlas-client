@@ -16,12 +16,10 @@ import org.json4s.jackson.Serialization.write
 
 class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
 
-  // val config = new SqConf()
   def this() = this(new AtlasClientWrapper(), new SqConf().getString("atlas.baseUrl"))
   implicit val jsonFormats: Formats = DefaultFormats + new EnumNameSerializer(AtlasStatus)
 
   val logger = Logger(this.getClass)
-  // val atlasBaseUrl = config.getString("atlas.baseUrl")
   val dslSearchUrl = s"$atlasBaseUrl/api/atlas/v2/search/dsl"
   val basicSearchUrl = s"$atlasBaseUrl/api/atlas/v2/search/basic"
   val entityUrl = s"$atlasBaseUrl/api/atlas/v2/entity"
@@ -44,13 +42,24 @@ class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
     }
   }
 
-  def saveTypeDefinition(typeDef: TypeDefinitionQuery): Future[Boolean] = {
-    val jsonBody = write(typeDef)
-    println(jsonBody)
-    val req = url(typeDefUrl).setBody(jsonBody).POST
-    client.queryAtlas(req).map(res => {
-      println(res)
-      true
+  def saveTypeDefinition(typeDef: AtlasTypeDefinition): Future[Boolean] = {
+
+    val typeDefs = AtlasTypeDefinitions(classTypes = Seq(typeDef))
+    val initialReq = url(typeDefUrl).setBody(write(typeDefs))
+    getTypeDefinitions(typeDef.typeName).map {
+      case Some(x) => {
+        logger.info(s"TypeDefinition found for ${typeDef.typeName}, updating.")
+        initialReq.PUT
+      }
+      case None => {
+        logger.info(s"No TypeDefinition found for ${typeDef.typeName}, creating new.")
+        initialReq.POST
+      }
+    }.flatMap(req => {
+      client.queryAtlas(req).map {
+        case Some(res) => true
+        case None => false
+      }
     })
   }
 

@@ -1,7 +1,7 @@
 package io.sqooba.atlas
 
 import io.sqooba.ExternalSpec
-import io.sqooba.atlas.model.{AtlasTypeDefinition, AttributeDefinition, TypeDefinitionQuery}
+import io.sqooba.atlas.model._
 import io.sqooba.conf.SqConf
 import org.scalatest.{AsyncFlatSpec, Matchers}
 
@@ -17,7 +17,6 @@ class AtlasClientE2eSpec extends AsyncFlatSpec with Matchers {
 
   "dsl search entities" should "return SearchResult when 1 is found" taggedAs (ExternalSpec) in {
     aClient.dslSearchEntities("kafka_topic", "name=\"kafka_metadata_example\"").map(res => {
-      println(s"res: $res")
       res.entities.length shouldBe 1
     })
   }
@@ -75,20 +74,18 @@ class AtlasClientE2eSpec extends AsyncFlatSpec with Matchers {
       res shouldBe defined
     })
   }
-  "create/update type definition" should "create new given type" in { // taggedAs (ExternalSpec) in {
+  "create/update type definition" should "create new given type" taggedAs (ExternalSpec) in {
 
     val attr1 = AttributeDefinition("testAttr1", "string", "optional", false, true, false)
     val attr2 = AttributeDefinition("testAttr2", "string", "optional", false, true, false)
-    val testType = AtlasTypeDefinition("testType1",
+    val testType = AtlasTypeDefinition("testType5",
       "testType",
       "1.0",
       Seq(attr1, attr2),
       "metatypename yeah",
       Seq("DataSet"))
 
-    val typeDef = TypeDefinitionQuery(classTypes = Seq(testType))
-    aClient.saveTypeDefinition(typeDef).map(res => {
-      println(res)
+    aClient.saveTypeDefinition(testType).map(res => {
       res shouldBe true
     })
   }
