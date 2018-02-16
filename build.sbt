@@ -1,6 +1,6 @@
 organization := "io.sqooba"
 scalaVersion := "2.11.11"
-version      := "0.1.11"
+version      := "0.1.12"
 name         := "atlas-client"
 
 crossScalaVersions := Seq("2.11.12", "2.12.4")

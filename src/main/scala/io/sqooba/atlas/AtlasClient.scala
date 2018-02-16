@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import com.typesafe.scalalogging.Logger
 import dispatch._
-import io.sqooba.atlas.model.{AtlasEntity, AtlasStatus, SearchResult}
+import io.sqooba.atlas.model._
 import io.sqooba.conf.SqConf
 import org.json4s.{DefaultFormats, Formats, JValue}
 import org.json4s.JsonAST.JNothing
@@ -25,11 +25,33 @@ class AtlasClient(client: AtlasClientWrapper, val atlasBaseUrl: String) {
   val dslSearchUrl = s"$atlasBaseUrl/api/atlas/v2/search/dsl"
   val basicSearchUrl = s"$atlasBaseUrl/api/atlas/v2/search/basic"
   val entityUrl = s"$atlasBaseUrl/api/atlas/v2/entity"
+  val typeDefUrl = s"$atlasBaseUrl/api/atlas/types"
 
   def ccToMap(cc: AnyRef): Map[String, Any] = (Map[String, Any]() /: cc.getClass.getDeclaredFields) {
     (a, f) =>
       f.setAccessible(true)
       a + (f.getName -> f.get(cc))
+  }
+
+  def getTypeDefinitions(typeName: String): Future[Option[List[AtlasTypeDefinition]]] = {
+    val req = url(s"$typeDefUrl/$typeName").GET
+    client.queryAtlas(req).map {
+      case Some(jsonRes) => {
+        val typeDef = jsonRes \ "definition" \ "classTypes"
+        Some(typeDef.extract[List[AtlasTypeDefinition]])
+      }
+      case None => None
+    }
+  }
+
+  def saveTypeDefinition(typeDef: TypeDefinitionQuery): Future[Boolean] = {
+    val jsonBody = write(typeDef)
+    println(jsonBody)
+    val req = url(typeDefUrl).setBody(jsonBody).POST
+    client.queryAtlas(req).map(res => {
+      println(res)
+      true
+    })
   }
 
   def pushEntityToAtlas(entity: AtlasEntity): Future[Option[AtlasEntity]] = {
@@ -137,7 +159,7 @@ class AtlasClientWrapper(client: Http) {
       AtlasClientWrapper.password)
     client(queryWithHeaders).map(res => {
       res.getStatusCode match {
-        case 200 => {
+        case 200 | 201 => {
           logger.debug(s"Ok response for: ${req.url}")
           Some(parse(res.getResponseBody, true))
         }
