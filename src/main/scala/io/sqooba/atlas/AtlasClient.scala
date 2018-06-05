@@ -182,7 +182,7 @@ class AtlasClientWrapper(client: Http) {
 }
 
 object AtlasClientWrapper {
-  val config = new SqConf("atlas-credentials.conf")
+  val config = new SqConf(Some("atlas-credentials.conf"))
   val username: String = config.getString("atlas.username")
   val password: String = config.getString("atlas.password")
   val timeoutInMs: Int = new SqConf().getInt("atlasClient.timeoutInMs")

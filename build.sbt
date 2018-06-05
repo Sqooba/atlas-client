@@ -9,7 +9,7 @@ val dispatchVersion = "0.13.2"
 val json4sVersion = "3.2.11" // match spark2
 
 resolvers ++= Seq(
-  "Sqooba libs-release" at "https://maven.sqooba.io/",
+  "Sqooba libs-release" at "https://artifactory.sqooba.io/",
   "Sqooba sbt" at "https://artifactory.sqooba.io/artifactory/libs-sbt-local/",
   "JBoss" at "https://repository.jboss.org/",
   "HDP Releases" at "http://repo.hortonworks.com/content/repositories/releases/",
@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "org.json4s"                  %%  "json4s-core"             % json4sVersion, // included in spark
   "org.json4s"                  %%  "json4s-jackson"          % json4sVersion, // included in spark,
   "ch.qos.logback"              %   "logback-classic"         % "1.2.3",
-  "io.sqooba"                   %%  "sq-conf"                 % "0.1.3",
+  "io.sqooba"                   %%  "sq-conf"                 % "0.3.2",
   "com.typesafe.scala-logging"  %%  "scala-logging"           % "3.7.2",
   "org.scalatest"               %%  "scalatest"               % "3.0.4"           % Test,
   "org.mockito"                 %   "mockito-all"             % "1.10.19"         % Test
