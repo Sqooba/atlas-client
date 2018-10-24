@@ -3,13 +3,13 @@ scalaVersion := "2.11.11"
 version      := "0.1.15"
 name         := "atlas-client"
 
-crossScalaVersions := Seq("2.11.12", "2.12.4")
+crossScalaVersions := Seq("2.11.12", "2.12.7")
 
 val dispatchVersion = "0.13.2"
 val json4sVersion = "3.2.11" // match spark2
 
 resolvers ++= Seq(
-  "Sqooba libs-release" at "https://artifactory-v2.sqooba.io/",
+  "Sqooba libs-release" at "https://artifactory-v2.sqooba.io/artifactory/libs-release",
   "Sqooba sbt" at "https://artifactory-v2.sqooba.io/artifactory/libs-sbt-local/",
   "JBoss" at "https://repository.jboss.org/",
   "HDP Releases" at "http://repo.hortonworks.com/content/repositories/releases/",
