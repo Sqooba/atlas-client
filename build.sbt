@@ -9,8 +9,8 @@ val dispatchVersion = "0.13.2"
 val json4sVersion = "3.2.11" // match spark2
 
 resolvers ++= Seq(
-  "Sqooba libs-release" at "https://artifactory.sqooba.io/",
-  "Sqooba sbt" at "https://artifactory.sqooba.io/artifactory/libs-sbt-local/",
+  "Sqooba libs-release" at "https://artifactory-v2.sqooba.io/",
+  "Sqooba sbt" at "https://artifactory-v2.sqooba.io/artifactory/libs-sbt-local/",
   "JBoss" at "https://repository.jboss.org/",
   "HDP Releases" at "http://repo.hortonworks.com/content/repositories/releases/",
   "HDP Releases Public" at "http://repo.hortonworks.com/content/groups/public/",
