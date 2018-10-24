@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "org.json4s"                  %%  "json4s-core"             % json4sVersion, // included in spark
   "org.json4s"                  %%  "json4s-jackson"          % json4sVersion, // included in spark,
   "ch.qos.logback"              %   "logback-classic"         % "1.2.3",
-  "io.sqooba"                   %%  "sq-conf"                 % "0.3.2",
+  "io.sqooba"                   %%  "sq-conf"                 % "0.3.5",
   "com.typesafe.scala-logging"  %%  "scala-logging"           % "3.7.2",
   "org.scalatest"               %%  "scalatest"               % "3.0.4"           % Test,
   "org.mockito"                 %   "mockito-all"             % "1.10.19"         % Test
