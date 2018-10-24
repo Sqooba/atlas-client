@@ -3,6 +3,9 @@
 
 pipeline {
     agent any
+    environment {
+        ARTIFACTORY_CREDS = credentials('artifactory-deployer')
+    }
     stages {
         stage('Clean & Compile') {
             steps {

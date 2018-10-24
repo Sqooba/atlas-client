@@ -40,9 +40,15 @@ inConfig(External)(Defaults.testTasks)
 testOptions in External -= Tests.Argument("-l", "ExternalSpec")
 testOptions in External += Tests.Argument("-n", "ExternalSpec")
 
+
+val artUser = sys.env.get("ARTIFACTORY_CREDS_USR").getOrElse("")
+val artPass = sys.env.get("ARTIFACTORY_CREDS_PSW").getOrElse("")
+
+credentials += Credentials("Artifactory Realm", "artifactory-v2.sqooba.io", artUser, artPass)
+
 publishTo := {
   val realm = "Artifactory Realm"
-  val artBaseUrl = "https://artifactory.sqooba.io/artifactory"
+  val artBaseUrl = "https://artifactory-v2.sqooba.io/artifactory"
   if (isSnapshot.value) {
     Some(realm at s"$artBaseUrl/libs-snapshot-local;build.timestamp=" + new java.util.Date().getTime)
   } else {
