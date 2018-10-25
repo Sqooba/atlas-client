@@ -1,11 +1,11 @@
 organization := "io.sqooba"
 scalaVersion := "2.11.11"
-version      := "0.1.15"
+version      := "0.1.16"
 name         := "atlas-client"
 
 crossScalaVersions := Seq("2.11.12", "2.12.7")
 
-val dispatchVersion = "0.13.2"
+val dispatchVersion = "0.13.4"
 val json4sVersion = "3.2.11" // match spark2
 
 resolvers ++= Seq(
@@ -14,6 +14,7 @@ resolvers ++= Seq(
   "JBoss" at "https://repository.jboss.org/",
   "HDP Releases" at "http://repo.hortonworks.com/content/repositories/releases/",
   "HDP Releases Public" at "http://repo.hortonworks.com/content/groups/public/",
+  Resolver.mavenCentral,
   Resolver.mavenLocal
 )
 
@@ -41,14 +42,19 @@ testOptions in External -= Tests.Argument("-l", "ExternalSpec")
 testOptions in External += Tests.Argument("-n", "ExternalSpec")
 
 
-val artUser = sys.env.get("ARTIFACTORY_CREDS_USR").getOrElse("")
-val artPass = sys.env.get("ARTIFACTORY_CREDS_PSW").getOrElse("")
+val artUser = sys.env.get("ARTIFACTORY_CREDS_USR")
+val artPass = sys.env.get("ARTIFACTORY_CREDS_PSW")
 
-credentials += Credentials("Artifactory Realm", "artifactory-v2.sqooba.io", artUser, artPass)
+val creds = if (artUser.isDefined && artPass.isDefined) {
+  Seq(Credentials("Artifactory Realm", "artifactory-v2.sqooba.io", artUser.get, artPass.get))
+} else { Seq() }
+
+credentials ++= creds
 
 publishTo := {
   val realm = "Artifactory Realm"
   val artBaseUrl = "https://artifactory-v2.sqooba.io/artifactory"
+
   if (isSnapshot.value) {
     Some(realm at s"$artBaseUrl/libs-snapshot-local;build.timestamp=" + new java.util.Date().getTime)
   } else {
