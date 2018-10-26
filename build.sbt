@@ -1,11 +1,11 @@
 organization := "io.sqooba"
 scalaVersion := "2.11.11"
-version      := "0.1.16"
+version      := "0.1.17"
 name         := "atlas-client"
 
 crossScalaVersions := Seq("2.11.12", "2.12.7")
 
-val dispatchVersion = "0.13.4"
+val dispatchVersion = "1.0.0"
 val json4sVersion = "3.2.11" // match spark2
 
 resolvers ++= Seq(
@@ -15,11 +15,12 @@ resolvers ++= Seq(
   "HDP Releases" at "http://repo.hortonworks.com/content/repositories/releases/",
   "HDP Releases Public" at "http://repo.hortonworks.com/content/groups/public/",
   Resolver.mavenCentral,
+  // "Apache MAven"
   Resolver.mavenLocal
 )
 
 libraryDependencies ++= Seq(
-  "net.databinder.dispatch"     %%  "dispatch-core"           % dispatchVersion,
+  "org.dispatchhttp"            %%  "dispatch-core"           % dispatchVersion,
   "org.json4s"                  %%  "json4s-ext"              % json4sVersion,
   "org.json4s"                  %%  "json4s-ast"              % json4sVersion, // included in spark
   "org.json4s"                  %%  "json4s-core"             % json4sVersion, // included in spark
